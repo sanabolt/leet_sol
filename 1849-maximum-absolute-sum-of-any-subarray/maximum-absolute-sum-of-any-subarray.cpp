@@ -6,7 +6,7 @@ public:
         int maxSum = 0;
 
         int currentMin = 0;
-        int minSum = 1;
+        int minSum = 0;
 
         for(int x : nums) {
 
