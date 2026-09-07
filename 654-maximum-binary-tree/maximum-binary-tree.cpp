@@ -12,31 +12,23 @@
 class Solution {
 public:
     TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
-        
-        if (nums.empty())
-            return nullptr;
+        vector<TreeNode*> st;
 
-        // Find index of maximum element
-        int maxIndex = 0;
+        for (int num : nums) {
+            TreeNode* curr = new TreeNode(num);
 
-        for (int i = 1; i < nums.size(); i++) {
-            if (nums[i] > nums[maxIndex]) {
-                maxIndex = i;
+            while (!st.empty() && st.back()->val < num) {
+                curr->left = st.back();
+                st.pop_back();
             }
+
+            if (!st.empty()) {
+                st.back()->right = curr;
+            }
+
+            st.push_back(curr);
         }
 
-        // Create root using maximum element
-        TreeNode* root = new TreeNode(nums[maxIndex]);
-
-        // Create left subtree
-        vector<int> left(nums.begin(), nums.begin() + maxIndex);
-
-        // Create right subtree
-        vector<int> right(nums.begin() + maxIndex + 1, nums.end());
-
-        root->left = constructMaximumBinaryTree(left);
-        root->right = constructMaximumBinaryTree(right);
-
-        return root;
+        return st[0];
     }
 };
