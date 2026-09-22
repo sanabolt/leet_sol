@@ -4,6 +4,8 @@ public:
         sort(nums.begin(), nums.end());
 
         for (int i = nums.size() - 1; i >= 2; i--) {
+
+            // Check triangle condition
             if (nums[i - 2] + nums[i - 1] > nums[i]) {
                 return nums[i - 2] + nums[i - 1] + nums[i];
             }
