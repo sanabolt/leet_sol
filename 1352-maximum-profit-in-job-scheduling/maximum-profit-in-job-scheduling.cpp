@@ -10,17 +10,25 @@ public:
         if (dp[i] != -1)
             return dp[i];
 
-        // 1. Skip current job
+        // Skip current job
         int skip = solve(i + 1);
 
-        // 2. Take current job
-        // Find first job whose start time >= current end time
-        int next = lower_bound(
-            jobs.begin() + i + 1,
-            jobs.end(),
-            vector<int>{jobs[i][1], 0, 0}
-        ) - jobs.begin();
+        // Binary Search
+        int low = i + 1;
+        int high = jobs.size();
 
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+
+            if (jobs[mid][0] >= jobs[i][1])
+                high = mid;
+            else
+                low = mid + 1;
+        }
+
+        int next = low;
+
+        // Take current job
         int take = jobs[i][2] + solve(next);
 
         return dp[i] = max(take, skip);
@@ -32,12 +40,15 @@ public:
 
         int n = startTime.size();
 
-        // {start, end, profit}
         for (int i = 0; i < n; i++) {
-            jobs.push_back({startTime[i], endTime[i], profit[i]});
+            jobs.push_back({
+                startTime[i],
+                endTime[i],
+                profit[i]
+            });
         }
 
-        // Sort by START TIME
+        // Sort by start time
         sort(jobs.begin(), jobs.end());
 
         dp.assign(n, -1);
