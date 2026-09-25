@@ -1,39 +1,47 @@
 class Solution {
 public:
-    int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
-        
+    vector<vector<int>> jobs;
+    vector<int> dp;
+
+    int solve(int i) {
+        if (i == jobs.size())
+            return 0;
+
+        if (dp[i] != -1)
+            return dp[i];
+
+        // 1. Skip current job
+        int skip = solve(i + 1);
+
+        // 2. Take current job
+        // Find first job whose start time >= current end time
+        int next = lower_bound(
+            jobs.begin() + i + 1,
+            jobs.end(),
+            vector<int>{jobs[i][1], 0, 0}
+        ) - jobs.begin();
+
+        int take = jobs[i][2] + solve(next);
+
+        return dp[i] = max(take, skip);
+    }
+
+    int jobScheduling(vector<int>& startTime,
+                      vector<int>& endTime,
+                      vector<int>& profit) {
+
         int n = startTime.size();
 
         // {start, end, profit}
-        vector<array<int, 3>> jobs;
-
         for (int i = 0; i < n; i++) {
             jobs.push_back({startTime[i], endTime[i], profit[i]});
         }
 
-        // Sort jobs by starting time
+        // Sort by START TIME
         sort(jobs.begin(), jobs.end());
 
-        vector<int> dp(n + 1, 0);
+        dp.assign(n, -1);
 
-        for (int i = n - 1; i >= 0; i--) {
-
-            // Find first job whose start >= current job's end
-            int next = lower_bound(
-                jobs.begin() + i + 1,
-                jobs.end(),
-                array<int, 3>{jobs[i][1], 0, 0}
-            ) - jobs.begin();
-
-            // Take current job
-            int take = jobs[i][2] + dp[next];
-
-            // Skip current job
-            int skip = dp[i + 1];
-
-            dp[i] = max(take, skip);
-        }
-
-        return dp[0];
+        return solve(0);
     }
 };
